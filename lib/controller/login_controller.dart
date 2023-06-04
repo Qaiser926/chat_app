@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:chat_app/allConstant/snakBar_progressIndicator.dart';
 import 'package:chat_app/api/api.dart';
 import 'package:chat_app/model/chat_userModel.dart';
-import 'package:chat_app/view/home/home.dart';
+import 'package:chat_app/Screen/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -17,8 +17,10 @@ class LoginController extends GetxController{
 
         /// search list 
         List<FirestoreDataModel> searchList = [];
-        // normal data list 
+        // for storing all users
         List<FirestoreDataModel> myList = [];
+
+    
 
  handleGoogleBtnClick(){
   
@@ -30,9 +32,11 @@ _signInWithGoogle().then((user)async{
   // log("\n UserAdditionalInfo: ${user.additionalUserInfo}");
   
  if(await(Apis.userExit())){
+   // ignore: prefer_const_constructors
    Get.to(Home());
  }else{
   await Apis.createUser().then((value) {
+     // ignore: prefer_const_constructors
      Get.to(Home());
   });
  }

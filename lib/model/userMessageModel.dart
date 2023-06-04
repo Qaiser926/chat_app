@@ -1,32 +1,35 @@
-class Messages {
-  Messages({
-    required this.msg,
+// ignore_for_file: file_names
+
+class Message {
+  Message({
     required this.toId,
+    required this.msg,
     required this.read,
     required this.type,
     required this.fromId,
     required this.send,
   });
-  late final String msg;
+
   late final String toId;
+  late final String msg;
   late final String read;
   late final String fromId;
   late final String send;
-    late final Type type;
-  
-  Messages.fromJson(Map<String, dynamic> json){
-    msg = json['msg'].toString();
+  late final Type type;
+
+  Message.fromJson(Map<String, dynamic> json) {
     toId = json['toId'].toString();
+    msg = json['msg'].toString();
     read = json['read'].toString();
-    type = json['type'].toString()==Type.image.name?Type.image:Type.text;
+    type = json['type'].toString() == Type.image.name ? Type.image : Type.text;
     fromId = json['fromId'].toString();
     send = json['send'].toString();
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data['msg'] = msg;
     data['toId'] = toId;
+    data['msg'] = msg;
     data['read'] = read;
     data['type'] = type.name;
     data['fromId'] = fromId;
@@ -34,4 +37,5 @@ class Messages {
     return data;
   }
 }
-enum Type{text,image}
+
+enum Type { text, image }

@@ -1,14 +1,12 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
 import 'package:chat_app/api/api.dart';
-import 'package:chat_app/main.dart';
+import 'package:chat_app/helpler/time_formate.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 import 'package:chat_app/model/userMessageModel.dart';
 
 class ChatUserMessageBody extends StatelessWidget {
-  Messages messages;
+  Message messages;
    ChatUserMessageBody({
     Key? key,
     required this.messages,
@@ -17,12 +15,13 @@ class ChatUserMessageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Apis.user.uid==messages.fromId? _greenMessage():_blueMessage();
-    
+    return Apis.user.uid==messages.fromId? _greenMessage(context):_blueMessage(context);
       }
-
   // sender or another message
-  Widget _blueMessage(){
+  Widget _blueMessage(BuildContext context){
+      if(messages.read.isEmpty){
+      Apis.UpdateMessageReadStatus(messages);
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -46,18 +45,21 @@ class ChatUserMessageBody extends StatelessWidget {
            margin: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
           child: Column(
             children: [
-              Text(messages.send),
+              Text(
+              FormateTimeUtil.getFormateTime(context, messages.send)
+              ),
+              if(messages.read.isNotEmpty)
               const Icon(Icons.check,color: Colors.blue,)
             ],
           )),
-        
       ],
     );
 
   }
 
   // our or user message
-  Widget _greenMessage(){
+  Widget _greenMessage(BuildContext context){
+  
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -66,8 +68,12 @@ class ChatUserMessageBody extends StatelessWidget {
            margin: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
           child: Column(
             children: [
-              Text(messages.send),
-              const Icon(Icons.check,color: Colors.blue,)
+
+              Text(
+                FormateTimeUtil.getFormateTime(context, messages.send)
+             ),
+           
+              // const Icon(Icons.check,color: Colors.blue,)
             ],
           )),
          Flexible(

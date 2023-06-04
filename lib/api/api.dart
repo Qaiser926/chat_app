@@ -9,7 +9,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class Apis {
+  // for authentication
   static FirebaseAuth auth = FirebaseAuth.instance;
+
+  // for accessing cloud firestore database
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   // for accessing firebase storage
@@ -18,18 +21,25 @@ class Apis {
   static User get user => auth.currentUser!;
 
   // for storing self information
-  static late FirestoreDataModel me;
+  // static late FirestoreDataModel me;
 
+  // for storing self information
+  static FirestoreDataModel me = FirestoreDataModel(
+      id: user.uid,
+      name: user.displayName.toString(),
+      email: user.email.toString(),
+      about: "Hey, I'm using We Chat!",
+      image: user.photoURL.toString(),
+      createdAt: '',
+      isOnline: false,
+      lastActive: '',
+      pushToken: '');    
+      
+  // for checking if user exists or not?
   static Future<bool> userExit() async {
     return (await firestore.collection("chat_app_user").doc(user.uid).get())
         .exists;
   }
-
-
-
-
-
-
   // for getting current user info
   static Future<void> getSelfInfo() async {
     await firestore
@@ -45,21 +55,16 @@ class Apis {
     });
   }
 
-
-
-
-
-
 // for creating new user
   static Future<void> createUser() async {
-    var time = DateTime.now().microsecondsSinceEpoch;
+    var time = DateTime.now().microsecondsSinceEpoch.toString();
     final chatUser = FirestoreDataModel(
-      name: user.displayName,
-      about: "I am Qiser",
-      createdAt: time.toString(),
-      email: user.email,
+      name: user.displayName??"",
+      about: "I am Qaiser",
+      createdAt: time,
+      email: user.email??"",
       id: user.uid,
-      image: user.photoURL,
+      image: user.photoURL??"",
       isOnline: false,
       lastActive: time.toString(),
       pushToken: "",
@@ -72,11 +77,7 @@ class Apis {
 
 
 
-
-
-
   // for getting all user from firestore database
-
   static Stream<QuerySnapshot<Map<String, dynamic>>> gettingAllUser() {
     return firestore
         .collection("chat_app_user")
@@ -85,12 +86,9 @@ class Apis {
   }
 
 
-
-
-
 // for updated user info
   static Future<void> updatedUserInfo() async {
-    await firestore
+    await firestore 
         .collection("chat_app_user")
         .doc(user.uid)
         .update({"name": me.name, "about": me.about}).then((value) {
@@ -99,19 +97,11 @@ class Apis {
   }
 
 
-
-
-
-
-
-
-
-
-
 // for updated profile picture
   static Future<void> updatedProfilePic(File file) async {
     // for add extension 
     final ext = file.path.split(".").last;
+    // ignore: unnecessary_brace_in_string_interps
     log("pic extension is : ${ext}");
     // for image path in firebase storage
     final ref = storage.ref().child("ProfilePicture/${user.uid}.$ext");
@@ -132,53 +122,66 @@ class Apis {
 
 
 
-
-
-
   /// ***************  show messages *****************
 
   // for getting all user from firestore database
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> gettingAllUserMessages() {
+ static  Stream<QuerySnapshot<Map<String, dynamic>>> gettingAllUserMessages() {
     return firestore.collection("Messages").snapshots();
   }
 
   // useful for getting conversation id
-  static String getConversationId(String id) =>
-      user.uid.hashCode <= id.hashCode
-          ? "${user.uid}-${id}"
-          : "${id}-${user.uid}";
+  static String getConversationID(String id) => user.uid.hashCode <= id.hashCode
+      ? '${user.uid}_$id'
+      : '${id}_${user.uid}';
 
-  // for getting all message of a specific conversation from firestore database
 
-  static  Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
-      FirestoreDataModel chatModel) {
+  // for getting all messages of a specific conversation from firestore database
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
+      FirestoreDataModel user) {
     return firestore
-        .collection("chats/${getConversationId(user.uid)}/messages")
+        .collection('chats/${getConversationID(user.id)}/messages/')
+        // .orderBy('sent', descending: true)
         .snapshots();
   }
 
-  static  Future<void> sendingMessage(
-      FirestoreDataModel chatUser, String msg) async {
-    // message sending time (also used as id)
-    final time = DateTime.now().microsecondsSinceEpoch.toString();
+  // for sending message
+  static Future<void> sendMessage(
+      FirestoreDataModel chatUser, String msg, Type type) async {
+    //message sending time (also used as id)
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
 
-    // for sending message
-    final Messages messages = Messages(
+
+    //message to send
+    final Message message = Message(
+        toId: chatUser.id,
         msg: msg,
-        toId: chatUser.id??"",
-        read: "",
-        type: Type.text,
+        read: '',
+        type: type,
         fromId: user.uid,
-        send: time);
+        send:time
 
+    );
     final ref = firestore
-        .collection("chats/${getConversationId(user.uid)}/message/");
-    // await ref.doc(time).set(messages.toJson());
-    await ref.doc(time).set(messages.toJson());
+        .collection('chats/${getConversationID(chatUser.id)}/messages/');
+    await ref.doc(time).set(message.toJson());
   }
-    // for sending message
+   
+    // for read status of message
+    static Future<void> UpdateMessageReadStatus(Message message)async{
+      firestore.collection("chats/${getConversationID(message.fromId)}/messages/")
+      .doc(message.send)
+      .update({"read":DateTime.now().millisecondsSinceEpoch.toString()});
+    }
 
-
+  // for getLastSeenMessage 
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getLastSeenMessage(
+      FirestoreDataModel user) {
+    return firestore
+        .collection('chats/${getConversationID(user.id)}/messages/')
+        .orderBy('send', descending: true)
+        .limit(1)
+        .snapshots();
+  }
 
 }

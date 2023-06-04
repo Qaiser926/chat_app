@@ -1,4 +1,10 @@
 
+
+
+
+
+// ignore_for_file: file_names
+
 class AppConstants{
 
   static const appTitle="Flutter Chat Demp";

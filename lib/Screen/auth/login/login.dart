@@ -1,16 +1,11 @@
-import 'dart:developer';
-import 'package:chat_app/allConstant/snakBar_progressIndicator.dart';
+
 import 'package:chat_app/controller/login_controller.dart';
-import 'package:chat_app/view/home/home.dart';
 import 'package:chat_app/main.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
+  // ignore: prefer_const_constructors_in_immutables
   LoginScreen({super.key});
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -21,10 +16,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // our is duration ka ye mtlb he k kitne time k bad is ne ana he .
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       setState(() {
         controller.animated.value = true;
       });
@@ -36,14 +30,14 @@ class _LoginScreenState extends State<LoginScreen> {
     mp = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title:const Text("Login"),
         backgroundColor: Colors.white,
       ),
       body: Stack(
         children: [
           AnimatedPositioned(
             // is ka ye matlb he  k is ne kab tak pohchna he center me
-            duration: Duration(seconds: 1),
+            duration:const Duration(seconds: 1),
             height: mp.height * 0.2,
             top: mp.height * 0.05,
             // left: mp.width*0.25,
@@ -59,9 +53,9 @@ class _LoginScreenState extends State<LoginScreen> {
             bottom: mp.height * 0.1,
             left: mp.width * 0.05,
             right: mp.width * 0.05,
-            child: Obx(() =>controller.isLoading.value?Center(child: CircularProgressIndicator()): ElevatedButton.icon(
+            child: Obx(() =>controller.isLoading.value?const Center(child: CircularProgressIndicator()): ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                    shape: StadiumBorder(), backgroundColor: Colors.blueGrey),
+                    shape:const StadiumBorder(), backgroundColor: Colors.blueGrey),
                 onPressed: () {
                   controller.handleGoogleBtnClick();
                 },

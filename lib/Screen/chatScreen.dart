@@ -1,8 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+
+// ignore_for_file: file_names
+
 import 'dart:convert';
 import 'dart:developer';
-
-import 'package:chat_app/allWidgets/chatUserMessageBody.dart';
+import 'package:chat_app/Screen/widgets/message_card.dart';
 import 'package:chat_app/api/api.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/model/userMessageModel.dart';
@@ -11,12 +12,12 @@ import 'package:flutter/material.dart';
 import 'package:chat_app/model/chat_userModel.dart';
 import 'package:get/get.dart';
 
+// ignore: must_be_immutable
 class ChatScreen extends StatefulWidget {
-  FirestoreDataModel firestoreDataModel;
-
+  FirestoreDataModel user;
   ChatScreen({
     Key? key,
-    required this.firestoreDataModel,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -25,7 +26,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   // storing data
-  List<Messages> _List = [];
+  // ignore: non_constant_identifier_names
+  List<Message> _List = [];
 
   final _textController = TextEditingController();
   @override
@@ -37,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: StreamBuilder(
-              stream: Apis.getAllMessages(widget.firestoreDataModel),
+              stream: Apis.getAllMessages(widget.user),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   //if data is loading
@@ -47,12 +49,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   //if some or all data is loaded then show it
                   case ConnectionState.active:
                   case ConnectionState.done:
-                    final data = snapshot.data?.docs;
+                    final data = snapshot.data!.docs;
+               
+            
+                  _List=data.map((e) => Message.fromJson(e.data())).toList();
                   
-                    _List = data?.map((e) => Messages.fromJson(e.data()))
-                            .toList() ??
-                        [];
-                   _List.length==0?log("NO Data Found"): log(jsonEncode(data![0].data()));
+                   // ignore: prefer_is_empty
+                   _List.length==0?log("NO Data Found"): log(jsonEncode(data[0].data()));
                     if (_List.isNotEmpty) {
                       return ListView.builder(
                           // reverse: true,
@@ -79,8 +82,10 @@ class _ChatScreenState extends State<ChatScreen> {
     ));
   }
 
+  // ignore: non_constant_identifier_names
   Container _BottomMessageSearchBar() {
-    return Container(
+    // ignore: avoid_unnecessary_containers
+    return  Container(
       child: Row(
         children: [
           Expanded(
@@ -91,24 +96,24 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   IconButton(
                       onPressed: () {},
-                      icon: Icon(
+                      icon:const Icon(
                         Icons.emoji_emotions,
                         color: Colors.blue,
                       )),
                   Expanded(
                       child: TextField(
                     controller: _textController,
-                    decoration: InputDecoration(
+                    decoration:const InputDecoration(
                       hintText: "Enter SomeThing...",
                       border: InputBorder.none,
                     ),
                   )),
                   IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.photo, color: Colors.blue)),
+                      icon:const Icon(Icons.photo, color: Colors.blue)),
                   IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.camera_alt, color: Colors.blue)),
+                      icon:const Icon(Icons.camera_alt, color: Colors.blue)),
                 ],
               ),
             ),
@@ -116,21 +121,20 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialButton(
             onPressed: () {
               if (_textController.text.isNotEmpty) {
-                Apis.sendingMessage(
-                  widget.firestoreDataModel,
-                  _textController.text,
+                Apis.sendMessage(
+                 widget.user, _textController.text, Type.text
                 );
                 _textController.text = '';
               }
             },
-            padding: EdgeInsets.all(4),
-            child: Icon(
+            padding:const EdgeInsets.all(4),
+            child:  Icon(
               Icons.send,
               color: Colors.white,
               size: 25,
             ),
             color: Colors.green,
-            shape: CircleBorder(),
+            shape:const CircleBorder(),
             minWidth: 0,
           )
         ],
@@ -150,13 +154,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 onPressed: () {
                   Get.back();
                 },
-                icon: Icon(Icons.arrow_back)),
+                icon:const Icon(Icons.arrow_back)),
             ClipRRect(
               borderRadius: BorderRadius.circular(25),
               child: Image.network(
-                widget.firestoreDataModel.image.toString(),
+                widget.user.image.toString(),
+                // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
                 errorBuilder: (BuildContext, Object, StackTrace) {
-                  return CircleAvatar();
+                  return const CircleAvatar();
                 },
                 fit: BoxFit.cover,
                 width: mp.width * 0.09,
@@ -165,15 +170,15 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
 
             // appBar title
-            SizedBox(
+          const  SizedBox(
               width: 15,
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.firestoreDataModel.name.toString()),
-                const Text("Last seen not Avaible"),
+                Text(widget.user.name.toString()),
+                const Text("Last seen not Available"),
               ],
             )
           ],

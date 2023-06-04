@@ -1,13 +1,12 @@
+import 'package:chat_app/Screen/widgets/chat_user_card.dart';
 import 'package:chat_app/api/api.dart';
-import 'package:chat_app/auth/login/login.dart';
 import 'package:chat_app/controller/login_controller.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/model/chat_userModel.dart';
-import 'package:chat_app/allWidgets/chat_user_card.dart';
-import 'package:chat_app/view/profile/profilePage.dart';
+import 'package:chat_app/Screen/profilePage.dart';
+import 'package:chat_app/model/userMessageModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -19,7 +18,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Apis.getSelfInfo();
   }
@@ -28,10 +26,12 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     
 
-
-    List<String> cities = ['Profile'];
+    // popupMenuItem item 
+     List<String> cities = ['Profile'];
 
     final controller = Get.put(LoginController());
+
+    Message message;
 
     return GestureDetector(
       // when enable textfield and we want to click on screen then close unfucos textfield 
@@ -47,7 +47,6 @@ class _HomeState extends State<Home> {
           }
         },
         child: Scaffold(
-
               appBar: _appbar(controller, cities),
           body: StreamBuilder(
             stream: Apis.gettingAllUser(),
@@ -76,7 +75,7 @@ class _HomeState extends State<Home> {
                       [];
                   if ( controller.myList.isNotEmpty) {
                     return ListView.builder(
-                      physics: BouncingScrollPhysics(),
+                      physics:const BouncingScrollPhysics(),
                       itemCount:controller.isSearching.value? controller.searchList.length : controller.myList.length,
                       padding: EdgeInsets.only(top: mp.height * 0.02),
                       itemBuilder: (context, index) {
@@ -86,14 +85,13 @@ class _HomeState extends State<Home> {
                       },
                     );
                   } else {
-                    return Center(child: Text("NO CONNECTION"));
+                    return const Center(child: Text("NO CONNECTION"));
                   }
               }
             },
           ),
-       
-        ),
-      )),
+        )
+  ))
     );
   }
 
@@ -115,8 +113,8 @@ class _HomeState extends State<Home> {
                 onChanged: (value){
                    controller.searchList.clear();
                   for (var i in controller.myList) {
-                    if(i.name!.toLowerCase().contains(value) 
-                    || i.email!.toLowerCase().contains(value)){
+                    if(i.name.toLowerCase().contains(value.toLowerCase()) 
+                    || i.email.toLowerCase().contains(value.toLowerCase())){
                       controller.searchList.add(i);
                     }
                     setState(() {
@@ -124,7 +122,7 @@ class _HomeState extends State<Home> {
                     });
                   }
                 },
-              ) : Text("We Chat",style: TextStyle(color: Colors.black),),
+              ) : const Text("We Chat",style: TextStyle(color: Colors.black),),
               actions: [
              IconButton(
                       onPressed: () {
@@ -153,6 +151,7 @@ class _HomeState extends State<Home> {
                   Get.to(ProfilePage(userModel: Apis.me));
                 }
                 // Handle the selected city here
+                // ignore: avoid_print
                 print('Selected city: $selectedCity');
               },
               // onSelected: (fn) => handleClick(),

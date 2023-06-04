@@ -1,5 +1,8 @@
+
+// ignore_for_file: file_names
+
 import 'package:chat_app/api/api.dart';
-import 'package:chat_app/auth/login/login.dart';
+import 'package:chat_app/Screen/auth/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';

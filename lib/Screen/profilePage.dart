@@ -1,9 +1,10 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+
+// ignore_for_file: file_names
 
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:chat_app/view/profile/widgets/floatingActionButton.dart';
+import 'package:chat_app/Screen/widgets/floatingActionButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chat_app/api/api.dart';
@@ -11,6 +12,7 @@ import 'package:chat_app/main.dart';
 import 'package:chat_app/model/chat_userModel.dart';
 import 'package:image_picker/image_picker.dart';
 
+// ignore: must_be_immutable
 class ProfilePage extends StatefulWidget {
   FirestoreDataModel userModel;
 
@@ -25,15 +27,16 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  String? _image;
+  String? images;
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     List<FirestoreDataModel> myList = [];
     return GestureDetector(
       // for hiding keyboard for press any place in the screen
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        floatingActionButton: FloatingActionButtonWidget(),
+        floatingActionButton:const FloatingActionButtonWidget(),
         appBar: _appbar(),
         body: Form(
           key: _formKey,
@@ -56,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? const CircleAvatar()
                         : Stack(
                             children: [
-                             _image!=null?  
+                             images!=null?  
                              // local image from storage
                               ClipRRect(
                                   borderRadius:
@@ -64,11 +67,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: Image.file(
                                     height: mp.height * 0.2,
                                     width: mp.width * 0.45,
-                                  File(_image!),
+                                  File(images!),
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, object, stack) {
-                                      return const Icon(Icons.error);
-                                    },
+                                   
                                   ))
                              : 
                              // server image from storage
@@ -94,11 +95,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   color: Colors.white,
                                   height: mp.height * 0.05,
                                   minWidth: mp.width * 0.05,
-                                  shape: CircleBorder(),
+                                  shape:const CircleBorder(),
                                   onPressed: () {
                                     _bottomSheet();
                                   },
-                                  child: Icon(Icons.edit),
+                                  child:const Icon(Icons.edit),
                                 ),
                               )
                             ],
@@ -148,14 +149,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: mp.height * .03,
                   ),
                   ElevatedButton.icon(
-                    icon: Icon(Icons.update),
+                    icon:const Icon(Icons.update),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
                         Apis.updatedUserInfo();
                       }
                     },
-                    label: Text("Updated"),
+                    label:const Text("Updated"),
                   )
                 ],
               ),
@@ -174,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 topRight: Radius.circular(mp.height * 0.02))),
         context: context,
         builder: (context) {
-          return Container(
+          return  SizedBox(
             height: mp.height * 0.25,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -188,10 +189,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       if(image!=null){
                         log("image path ${image.path}");
                             setState(() {
-                            _image=image.path;
+                            images=image.path;
                             Get.back();
                           });
-                           Apis.updatedProfilePic(File(_image!));
+                           Apis.updatedProfilePic(File(images!));
                       }
                     },
                     icon: Icon(
@@ -208,10 +209,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       if(image!=null){
                         log("image path ${image.path}");
                             setState(() {
-                            _image=image.path;
+                            images=image.path;
                             Get.back();
                           });
-                          Apis.updatedProfilePic(File(_image!));
+                          Apis.updatedProfilePic(File(images!));
                       }
                     },
                     icon: Icon(
@@ -231,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
         onTap: () {
           Get.back();
         },
-        child: Icon(
+        child:const Icon(
           Icons.arrow_back,
           color: Colors.black,
         ),
