@@ -3,6 +3,7 @@
 
 import 'package:chat_app/api/api.dart';
 import 'package:chat_app/Screen/auth/login/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -31,6 +32,7 @@ class FloatingActionButtonWidget extends StatelessWidget {
 
             await googleSignIn.signOut().then((value) {
               Get.back();
+              Apis.auth=FirebaseAuth.instance;
               Get.offAll(LoginScreen());
             });
           });

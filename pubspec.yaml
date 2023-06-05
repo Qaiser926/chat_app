@@ -53,6 +53,10 @@ dependencies:
   fluttertoast: ^8.2.1
   image_picker: ^0.8.7+5
   cached_network_image: ^3.2.3
+  emoji_picker_flutter: ^1.6.0
+  http: 
+  flutter_notification_channel: ^2.0.0
+  gallery_saver: ^2.3.2
   
 
 dev_dependencies:
